@@ -114,4 +114,17 @@ class AppTest < Minitest::Test
     assert_equal 422, last_response.status
     assert_includes last_response.body, "A name is required"
   end
+
+  def test_delete_document
+    create_document("delete_this.txt")
+
+    post "/delete_this.txt/delete"
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "delete_this.txt has been deleted"
+
+    get '/'
+    refute_includes last_response.body, "delete_this.txt"
+  end
 end
