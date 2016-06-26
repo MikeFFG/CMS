@@ -89,4 +89,29 @@ class AppTest < Minitest::Test
     assert_equal 200, last_response.status
     assert_includes last_response.body, "new content"
   end
+
+  def test_view_new_document_form
+    get "/new"
+
+    assert_equal 200, last_response.status
+    assert_includes last_response.body, "<input"
+    assert_includes last_response.body, %q(<button type="submit")
+  end
+
+  def test_new_document
+    post "/create", filename: "new_file.txt"
+    assert_equal 302, last_response.status
+
+    get last_response["Location"]
+    assert_includes last_response.body, "new_file.txt was created."
+
+    get "/"
+    assert_includes last_response.body, "new_file.txt"
+  end
+
+  def test_new_document_without_filename
+    post "/create", filename: ""
+    assert_equal 422, last_response.status
+    assert_includes last_response.body, "A name is required"
+  end
 end

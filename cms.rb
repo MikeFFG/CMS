@@ -50,6 +50,23 @@ get '/' do
   erb :index, layout: :layout
 end
 
+get '/new' do
+  erb :new
+end
+
+post '/create' do
+  if params[:filename] == ''
+    session[:message] = "A name is required."
+    status 422
+    erb :new
+  else
+    file_path = File.join(data_path, params[:filename])
+    File.new(file_path, 'w')
+    session[:message] = "#{params[:filename]} was created."
+    redirect '/'
+  end
+end
+
 get '/:filename' do
   file_path = File.join(data_path, params[:filename])
 
@@ -76,5 +93,5 @@ get '/:filename/edit' do
   @filename = params[:filename]
   @content = File.read(file_path)
 
-  erb :edit
+  erb :edit, layout: :layout
 end
