@@ -25,7 +25,7 @@ helpers do
       headers["Content-Type"] = "text/plain"
       content
     when '.md'
-      render_markdown(content)
+      erb render_markdown(content)
     end
   end
 end
@@ -34,15 +34,24 @@ before do
 
 end
 
+def data_path
+  if ENV["RACK_ENV"] == "test"
+    File.expand_path("../test/data", __FILE__)
+  else
+    File.expand_path("../data", __FILE__)
+  end
+end
+
 get '/' do
-  @files = Dir.glob(root + '/data/*').map do |path|
+  pattern = File.join(data_path, "*")
+  @files = Dir.glob(pattern).map do |path|
     File.basename(path)
   end
-  erb :index
+  erb :index, layout: :layout
 end
 
 get '/:filename' do
-  file_path = root + '/data/' + params[:filename]
+  file_path = File.join(data_path, params[:filename])
 
   if File.exist?(file_path)
     load_file_content(file_path)
@@ -53,7 +62,7 @@ get '/:filename' do
 end
 
 post '/:filename' do
-  file_path = root + "/data/" + params[:filename]
+  file_path = File.join(data_path, params[:filename])
 
   File.write(file_path, params[:content])
 
@@ -62,7 +71,7 @@ post '/:filename' do
 end
 
 get '/:filename/edit' do
-  file_path = root + '/data/' + params[:filename]
+  file_path = File.join(data_path, params[:filename])
 
   @filename = params[:filename]
   @content = File.read(file_path)
