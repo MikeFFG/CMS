@@ -142,6 +142,13 @@ class AppTest < Minitest::Test
     assert_includes last_response.body, "new_file.txt"
   end
 
+  def test_new_document_with_invalid_file_extension
+    post "/create", {filename: "new_file.what"}, admin_session
+    assert_equal 422, last_response.status
+    assert_includes last_response.body,
+      "Only .txt and .md files are supported."
+  end
+
   def test_create_new_document_signed_out
     post "/create", {filename: "new_file.txt"}
 
