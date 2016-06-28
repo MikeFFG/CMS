@@ -151,6 +151,10 @@ post '/users/signup' do
   end
 end
 
+get '/image_uploader' do
+  erb :image_uploader
+end
+
 post '/create' do
   require_signed_in_user
   if params[:filename] == ''
