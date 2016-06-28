@@ -32,10 +32,6 @@ helpers do
   end
 end
 
-before do
-
-end
-
 def data_path
   if ENV["RACK_ENV"] == "test"
     File.expand_path("../test/data", __FILE__)
@@ -118,6 +114,10 @@ post '/create' do
   require_signed_in_user
   if params[:filename] == ''
     session[:message] = "A name is required."
+    status 422
+    erb :new
+  elsif ![".txt", ".md"].include?(File.extname(params[:filename]))
+    session[:message] = "Only .txt and .md files are supported."
     status 422
     erb :new
   else
