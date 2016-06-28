@@ -2,7 +2,9 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'sinatra/content_for'
 require 'tilt/erubis'
-require "redcarpet"
+require 'redcarpet'
+require 'yaml'
+require 'bcrypt'
 require 'pry'
 
 root = File.expand_path('..', __FILE__)
@@ -42,6 +44,26 @@ def data_path
   end
 end
 
+def valid_credentials?(username, password)
+  credentials = load_user_credentials
+
+  if credentials.key?(username)
+    bcrypt_password = BCrypt::Password.new(credentials[username])
+    bcrypt_password == password
+  else
+    false
+  end
+end
+
+def load_user_credentials
+  credentials_path = if ENV["RACK_ENV"] == "test"
+    File.expand_path("../test/users.yml", __FILE__)
+  else
+    File.expand_path("../users.yml", __FILE__)
+  end
+  YAML.load_file(credentials_path)
+end
+
 def signed_in?
   session[:username]
 end
@@ -71,9 +93,11 @@ get '/users/sign_in' do
 end
 
 post '/users/sign_in' do
+  credentials = load_user_credentials
   @username = params[:username]
   @password = params[:password]
-  if @username == "admin" && @password == "secret"
+
+  if valid_credentials?(@username, @password)
     session[:username] = @username
     session[:message] = "Welcome!"
     redirect '/'
