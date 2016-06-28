@@ -40,6 +40,18 @@ def data_path
   end
 end
 
+def increment_filename(original_filename)
+  ext = File.extname(original_filename)
+  filename = File.basename(original_filename, ext)
+  if filename.chars.last.to_i != 0
+    incrementer = filename.chars.last.to_i + 1
+    filename = filename.chars.slice!(0, filename.chars.length - 1).join
+  else
+    incrementer = 1
+  end
+  new_path = File.join(data_path, filename + incrementer.to_s + ext)
+end
+
 def valid_credentials?(username, password)
   credentials = load_user_credentials
 
@@ -166,5 +178,15 @@ post '/:filename/delete' do
   File.delete(file_path)
 
   session[:message] = "#{params[:filename]} has been deleted."
+  redirect '/'
+end
+
+post '/:filename/duplicate' do
+  require_signed_in_user
+  file_path = File.join(data_path, params[:filename])
+  new_path = increment_filename(file_path)
+
+  FileUtils.cp(file_path, new_path)
+  session[:message] = "#{File.basename(new_path)} was created."
   redirect '/'
 end

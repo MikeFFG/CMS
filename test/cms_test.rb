@@ -2,6 +2,7 @@ ENV["RACK_ENV"] = "test"
 
 require "minitest/autorun"
 require "rack/test"
+require "pry"
 
 require_relative "../cms"
 
@@ -181,6 +182,14 @@ class AppTest < Minitest::Test
     assert_equal "You must be signed in to do that.", session[:message]
   end
 
+  def test_duplicate_document
+    create_document("test.txt", "blah blah blah")
+
+    post "/test.txt/duplicate", {}, admin_session
+    assert_equal 302, last_response.status
+    assert_equal "test1.txt was created.", session[:message]
+  end
+
   def test_signin_form
     get "/users/sign_in"
 
@@ -217,4 +226,5 @@ class AppTest < Minitest::Test
     assert_includes last_response.body, "You have been signed out"
     assert_includes last_response.body, "Sign In"
   end
+
 end
