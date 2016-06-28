@@ -53,7 +53,7 @@ def increment_filename(original_filename)
 end
 
 def valid_credentials?(username, password)
-  credentials = load_user_credentials
+  credentials = YAML.load_file(user_credentials_path)
 
   if credentials.key?(username)
     bcrypt_password = BCrypt::Password.new(credentials[username])
@@ -63,13 +63,16 @@ def valid_credentials?(username, password)
   end
 end
 
-def load_user_credentials
+def encrypt_password(password)
+  BCrypt::Password.create(password)
+end
+
+def user_credentials_path
   credentials_path = if ENV["RACK_ENV"] == "test"
     File.expand_path("../test/users.yml", __FILE__)
   else
     File.expand_path("../users.yml", __FILE__)
   end
-  YAML.load_file(credentials_path)
 end
 
 def signed_in?
@@ -100,8 +103,12 @@ get '/users/sign_in' do
   erb :sign_in
 end
 
+get '/users/signup' do
+  erb :signup
+end
+
 post '/users/sign_in' do
-  credentials = load_user_credentials
+  credentials = YAML.load_file(user_credentials_path)
   @username = params[:username]
   @password = params[:password]
 
@@ -120,6 +127,28 @@ post '/users/signout' do
   session.delete(:username)
   session[:message] = "You have been signed out."
   redirect '/'
+end
+
+post '/users/signup' do
+  user_info = YAML.load_file(user_credentials_path)
+  user_info[params[:username]] = encrypt_password(params[:password])
+  File.open(user_credentials_path, 'w') do |line|
+    line.write user_info.to_yaml
+  end
+
+  if params[:password].size < 6 || params[:password].size > 12
+    session[:message] = "Invalid password"
+    status 422
+    erb :signup
+  elsif params[:username] == ""
+    session[:message] = "Please enter a username"
+    status 422
+    erb :signup
+  else
+    session[:username] = params[:username]
+    session[:message] = "Thanks for signing up!"
+    redirect '/'
+  end
 end
 
 post '/create' do

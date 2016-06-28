@@ -1,2 +1,33 @@
 ---
-developer: $2a$10$yIvdk9f/dw4nCWo3bK/eKuySG9cB3lMFCbEu.Z.ytHWX5.Y6GINE2
+developer: "$2a$10$RUcBjelz1pzXcSTqLTLyeOjUz/B7V9IsAuLrZspRSA96epYhA7UpK"
+test: "$2a$10$qGANONicWIw7tRBNf3nk/eei9cQhpi6/FhzYggpGzEKppunrbBTxK"
+John: !ruby/string:BCrypt::Password
+  str: "$2a$10$DduAA1i60PV4UKttm8Rmk.NmNs6zL.tvs4pcIQlwYBjMpi6uJum2C"
+  version: 2a
+  cost: 10
+  salt: "$2a$10$DduAA1i60PV4UKttm8Rmk."
+  checksum: NmNs6zL.tvs4pcIQlwYBjMpi6uJum2C
+Dude: !ruby/string:BCrypt::Password
+  str: "$2a$10$J2VTKFCRQ4zXkGD/skPU6eTjH/R2faKrjzEo2.bLzxH83plVXJeTm"
+  version: 2a
+  cost: 10
+  salt: "$2a$10$J2VTKFCRQ4zXkGD/skPU6e"
+  checksum: TjH/R2faKrjzEo2.bLzxH83plVXJeTm
+'': !ruby/string:BCrypt::Password
+  str: "$2a$10$nyQxbg0bWIYwCa8PQCuqUOYjqgXAp9tfN5HbE5s4JB2MA5C02IjEm"
+  version: 2a
+  cost: 10
+  salt: "$2a$10$nyQxbg0bWIYwCa8PQCuqUO"
+  checksum: YjqgXAp9tfN5HbE5s4JB2MA5C02IjEm
+Mike: !ruby/string:BCrypt::Password
+  str: "$2a$10$rbBZoygeV3nRrf4LBGQYmOAEZYZ2wm/wOxFkjhizonx08rRMehy3a"
+  version: 2a
+  cost: 10
+  salt: "$2a$10$rbBZoygeV3nRrf4LBGQYmO"
+  checksum: AEZYZ2wm/wOxFkjhizonx08rRMehy3a
+Nime: !ruby/string:BCrypt::Password
+  str: "$2a$10$0Hm.NzP5FQu6ehkHuWblkeYHXV2x7ALZejjDc8hGbGip9q36fMg6W"
+  version: 2a
+  cost: 10
+  salt: "$2a$10$0Hm.NzP5FQu6ehkHuWblke"
+  checksum: YHXV2x7ALZejjDc8hGbGip9q36fMg6W
